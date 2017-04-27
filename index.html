@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="pt-br" manifest="offline.manifest">
+	<head>
+		<title></title>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+	</head>
+	<body>
+	
+		<form>
+			<table>
+				<tbody>
+					<tr>
+						<td>Nome</td>
+						<td><input type="text" id="nome"></td>
+					</tr>
+				</tbody>
+			</table>
+			<button type="submit" id="saveButton">Salvar</button>
+		</form>
+
+		<ul id="listaPessoas"></ul>
+
+		<script src="js/indexeddb-rofync.js"></script>
+		<script>
+
+			let DatabaseSync = new IndexedDbRofync('sync-api-test', 1, [
+				{ name: 'pessoas', keyPath: 'id', indexName: 'statusIndex', indexValue: 'status' }
+			])
+			DatabaseSync.start()
+
+			const URI_PESSOAS = 'http://localhost:3000/pessoas'
+
+			initEvents()
+			render()
+
+			function initEvents() {
+				document.getElementById('saveButton').addEventListener('click', function (event) {
+					event.preventDefault()
+					save()
+				})
+			}
+
+			function save() {
+				let objeto = {
+					nome: document.getElementById('nome').value
+				}
+
+				if (!objeto.nome) {
+					alert('Informações incompletas ou inválidas')
+					return
+				}
+
+				DatabaseSync.create(objeto, 'pessoas', URI_PESSOAS)
+				render()
+			}
+
+			function render() {
+				// let listaPessoas = document.getElementById('listaPessoas')
+				
+				// listaPessoas.innerHTML = ''
+				
+				// let objetosLocal = DatabaseSync.list('pessoas')
+				// objetosLocal.forEach(objeto => {
+				// 	let li = document.createElement('li')
+				// 	li.appendChild(document.createTextNode(objeto.nome))
+				// 	listaPessoas.appendChild(li)
+				// })
+			}
+		</script>
+	</body>
+</html>
